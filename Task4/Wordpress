@@ -1,0 +1,37 @@
+pipeline {
+  agent any
+  parameters{
+      string description: 'key pair name', name: 'key_name'
+      string description: 'database name', name: 'db_name'
+      string description: 'db user name', name: 'username'
+      password description: 'db password', name: 'password'
+      choice(
+          name: 'Terraform_Action',
+          choices: 'apply\ndestroy',
+          description: 'Terraform action'
+          )
+  }
+
+  stages {
+     stage('Initialize') {
+       steps {
+        echo ("git cloning")
+        git branch: 'master',
+        url: 'https://github.com/MohamedSalmankhan/Wordpress.git'
+        sh 'ls -l'
+        sh "terraform init"
+       }
+     }
+     stage('TF Plan'){
+         steps{
+            sh "terraform plan -var-file=var.tfvars"
+            input message: 'Ready to perform action?', ok: 'yes'
+         }
+     }
+     stage('TF Action'){
+         steps{
+            sh "terraform ${params.Terraform_Action} -var-file=var.tfvars -auto-approve"
+         }
+     }
+  }
+} 

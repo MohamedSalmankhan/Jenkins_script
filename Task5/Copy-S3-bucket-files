@@ -22,13 +22,13 @@ pipeline {
      }
      stage('TF Plan'){
          steps{
-            sh "terraform plan -var source_bucket=${params.source_bucket} -var dest_bucket=${params.dest_bucket} -var cloudtrail_bucket=${params.cloudtrail_bucket}"
+            sh "terraform plan -var "
             input message: 'Ready to perform action?', ok: 'yes'
          }
      }
      stage('TF Action'){
          steps{
-            sh "terraform ${params.Terraform_Action} -var source_bucket=${params.source_bucket} -var dest_bucket=${params.dest_bucket} -var cloudtrail_bucket=${params.cloudtrail_bucket} -auto-approve"
+            sh "terraform ${params.Terraform_Action} -auto-approve"
          }
      }
   }

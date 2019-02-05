@@ -1,0 +1,35 @@
+pipeline {
+  agent any
+  parameters{
+      string description: 'ip address', name: 'admin_cidr'
+      string description: 'key pair name', name: 'key_name'
+      choice(
+          name: 'Terraform_Action',
+          choices: 'apply\ndestroy',
+          description: 'Terraform action'
+          )
+  }
+
+  stages {
+     stage('Initialize') {
+       steps {
+        echo ("git cloning")
+        git branch: 'master',
+        url: 'https://github.com/MohamedSalmankhan/ECS_Cluster.git'
+        sh 'ls -l'
+        sh "terraform init"
+       }
+     }
+     stage('TF Plan'){
+         steps{
+            sh "terraform plan -var-file=var.tfvars"
+            input message: 'Ready to perform action?', ok: 'yes'
+         }
+     }
+     stage('TF Apply'){
+         steps{
+            sh "terraform ${params.Terraform_Action} -var-file=var.tfvars -auto-approve"
+         }
+     }
+  }
+} 

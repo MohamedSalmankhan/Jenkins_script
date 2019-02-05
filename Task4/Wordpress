@@ -24,13 +24,13 @@ pipeline {
      }
      stage('TF Plan'){
          steps{
-            sh "terraform plan -var-file=var.tfvars"
+            sh "terraform plan -var-file=var.tfvars -var key_name=${params.key_name} -var db_name=${params.db_name} -var username=${params.username} -var password=${params.password}"
             input message: 'Ready to perform action?', ok: 'yes'
          }
      }
      stage('TF Action'){
          steps{
-            sh "terraform ${params.Terraform_Action} -var-file=var.tfvars -auto-approve"
+            sh "terraform ${params.Terraform_Action} -var-file=var.tfvars -var key_name=${params.key_name} -var db_name=${params.db_name} -var username=${params.username} -var password=${params.password} -auto-approve"
          }
      }
   }

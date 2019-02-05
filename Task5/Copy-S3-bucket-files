@@ -1,0 +1,35 @@
+pipeline {
+  agent any
+  parameters{
+      string description: 'source bucket name', name: 'source_bucket'
+      string description: 'destination bucket name', name: 'dest_bucket'
+      string description: 'log storage bucket', name: 'cloudtrail_bucket'
+      choice(
+          name: 'Terraform_Action',
+          choices: 'apply\ndestroy',
+          description: 'Terraform action'
+          )
+  }
+  stages {
+     stage('Initialize') {
+       steps {
+        echo ("git cloning")
+        git branch: 'master',
+        url: 'https://github.com/MohamedSalmankhan/Copy-S3-bucket-files'
+        sh 'ls -l'
+        sh "terraform init"
+       }
+     }
+     stage('TF Plan'){
+         steps{
+            sh "terraform plan -var source_bucket=${params.source_bucket} -var dest_bucket=${params.dest_bucket} -var cloudtrail_bucket=${params.cloudtrail_bucket}"
+            input message: 'Ready to perform action?', ok: 'yes'
+         }
+     }
+     stage('TF Action'){
+         steps{
+            sh "terraform ${params.Terraform_Action} -var source_bucket=${params.source_bucket} -var dest_bucket=${params.dest_bucket} -var cloudtrail_bucket=${params.cloudtrail_bucket} -auto-approve"
+         }
+     }
+  }
+} 

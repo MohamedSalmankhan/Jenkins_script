@@ -22,13 +22,13 @@ pipeline {
      }
      stage('TF Plan'){
          steps{
-            sh "terraform plan -var-file=var.tfvars"
+            sh "terraform plan -var-file=var.tfvars -var admin_cidr=${params.admin_cidr} -var key_name=${params.key_name}"
             input message: 'Ready to perform action?', ok: 'yes'
          }
      }
      stage('TF Apply'){
          steps{
-            sh "terraform ${params.Terraform_Action} -var-file=var.tfvars -auto-approve"
+            sh "terraform ${params.Terraform_Action} -var-file=var.tfvars -var admin_cidr=${params.admin_cidr} -var key_name=${params.key_name} -auto-approve"
          }
      }
   }

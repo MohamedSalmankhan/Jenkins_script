@@ -13,6 +13,7 @@ pipeline {
        steps {
         echo ("git cloning")
         git branch: 'master',
+        credentialsId: 'github-private',
         url: 'https://github.com/MohamedSalmankhan/tf_bpg.git'
         sh 'ls -l'
         sh "terraform init"
